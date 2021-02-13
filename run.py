@@ -63,7 +63,7 @@ def read_users_from_file(filename):
 
 def generate_cards(persons):
     font_path = "Ubuntu-M.ttf"
-    font = ImageFont.truetype(font_path, 70)
+    font = ImageFont.truetype(font_path, 60)
     img = open_image_from_url(TEMPLATE_URL)
     width, _ = img.size
     card_files = []
@@ -77,25 +77,24 @@ def generate_cards(persons):
         text_x = (width - text_width) / 2
         draw.text((text_x, 1399), person.name, (0, 0, 0), font=font)
 
-        font = ImageFont.truetype(font_path, 60)
 
         text_width, _ = draw.textsize(person.userid, font=font)
         text_x = (width - text_width) / 2
         draw.text((text_x, 1499), person.userid, (0, 0, 0), font=font)
-
-        font = ImageFont.truetype(font_path, 70)
+        font = ImageFont.truetype(font_path, 50)
 
         role = person.role if person.role else (" " * 20)
         text_width, _ = draw.textsize(role, font=font)
         text_x = (width - text_width) / 2
         draw.text((text_x, 1599), role, (0, 0, 0), font=font)
 
+        font = ImageFont.truetype(font_path, 50)
         if dp:
             # h - 348 w - 300
             dp = dp.convert('RGB')
-            dp = dp.resize((300, 348), Image.ANTIALIAS)
+            dp = dp.resize((350, 470), Image.ANTIALIAS)
             x_off = (width - dp.size[0]) // 2
-            tmp_img.paste(dp, (x_off, 855))
+            tmp_img.paste(dp, (x_off, 830))
         else:
             logger.info(f"{person.name} - image not loaded")
 
@@ -108,4 +107,4 @@ def generate_cards(persons):
 
 if __name__ == "__main__":
     users = read_users_from_file(USERS_FILE)
-    generate_cards(users[:4])
+    generate_cards(users[:2])
