@@ -27,8 +27,8 @@ class Person:
     def __init__(self, name, userid, image, role):
         self.image = image and image.strip()
         self.name = name and name.strip().title()
-        self.userid = userid and userid.strip().upper()
-        self.role = role and role.strip().upper()
+        self.userid = userid and userid.strip()
+        self.role = role and role.strip()
 
 
 def open_image_from_url(url):
