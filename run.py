@@ -12,7 +12,7 @@ import csv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
-TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1613323190/ID%20Card/updated_card.jpg"
+TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1613836667/ID%20Card/ID_Card_FINAL.jpg"
 USERS_FILE = "users.csv"
 
 
@@ -73,17 +73,17 @@ def generate_cards(persons):
         tmp_img = copy.copy(img)
         draw = ImageDraw.Draw(tmp_img)
 
-        font = ImageFont.truetype(font_path, 65)
+        font = ImageFont.truetype(font_path, 70)
         text_width, _ = draw.textsize(person.name, font=font)
         text_x = (width - text_width) / 2
         draw.text((text_x, 1399), person.name, (0, 0, 0), font=font)
 
-        font = ImageFont.truetype(font_path, 55)
+        font = ImageFont.truetype(font_path, 65)
         text_width, _ = draw.textsize(person.userid, font=font)
         text_x = (width - text_width) / 2
         draw.text((text_x, 1499), person.userid, (0, 0, 0), font=font)
         
-        font = ImageFont.truetype(font_path, 50)
+        font = ImageFont.truetype(font_path, 60)
 
         role = person.role if person.role else (" " * 20)
         text_width, _ = draw.textsize(role, font=font)
