@@ -12,7 +12,7 @@ import csv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
-TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1646884464/ID%20Card/ID_Card_FINAL.jpg"
+TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1646888593/ID%20Card/ID_Card_FINAL.jpg"
 USERS_FILE = "users.csv"
 
 
