@@ -6,7 +6,6 @@ from PIL import ImageDraw
 import copy
 import io
 import os
-import time
 import csv
 
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +14,11 @@ logger = logging.getLogger("app")
 TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1646890333/ID%20Card/ID_Card_FINAL.jpg"
 USERS_FILE = "users.csv"
 
+QR_POSITION = (838, 1601) # (X, Y)
+QR_SIZE=300
+FONT_SIZE_BIG=70
+FONT_SIZE_MEDIUM=65
+FONT_SIZE_SMALL=60
 
 class COLUMNS:
     USER_ID = "Student_ID"
@@ -60,10 +64,18 @@ def read_users_from_file(filename):
             )
     return persons
 
+def get_barcode_image(student_id, size):
+    content = f"https://login.rssi.in/rssi-student/verification.php?get_id={student_id}"
+    return _get_barcode_for(content, size=size)
+
+def _get_barcode_for(content, size):
+    res = requests.get(f"https://chart.googleapis.com/chart?chs={size}x{size}&cht=qr&chl={content}")
+    return Image.open(io.BytesIO(res.content))
+
 
 def generate_cards(persons):
     font_path = "Ubuntu-M.ttf"
-    font = ImageFont.truetype(font_path, 60)
+    font = ImageFont.truetype(font_path, FONT_SIZE_BIG)
     img = open_image_from_url(TEMPLATE_URL)
     width, _ = img.size
     card_files = []
@@ -73,17 +85,16 @@ def generate_cards(persons):
         tmp_img = copy.copy(img)
         draw = ImageDraw.Draw(tmp_img)
 
-        font = ImageFont.truetype(font_path, 70)
         text_width, _ = draw.textsize(person.name, font=font)
         text_x = (width - text_width) / 2
         draw.text((text_x, 1399), person.name, (0, 0, 0), font=font)
 
-        font = ImageFont.truetype(font_path, 65)
+        font = ImageFont.truetype(font_path, FONT_SIZE_MEDIUM)
         text_width, _ = draw.textsize(person.userid, font=font)
         text_x = (width - text_width) / 2
         draw.text((text_x, 1499), person.userid, (0, 0, 0), font=font)
         
-        font = ImageFont.truetype(font_path, 60)
+        font = ImageFont.truetype(font_path, FONT_SIZE_SMALL)
 
         role = person.role if person.role else (" " * 20)
         text_width, _ = draw.textsize(role, font=font)
@@ -100,6 +111,13 @@ def generate_cards(persons):
         else:
             logger.info(f"{person.name} - image not loaded")
 
+        try:
+            barcode_img = get_barcode_image(person.userid, size=QR_SIZE)
+        except Exception:
+            logging.exception(f"{person.name} - barcode not loaded")
+        else:
+            tmp_img.paste(barcode_img, QR_POSITION)
+
         card_filename = "card_{}.jpg".format(person.name)
         card_filepath = os.path.join("cards", card_filename)
         tmp_img.save(card_filepath, quality=95)
@@ -109,4 +127,4 @@ def generate_cards(persons):
 
 if __name__ == "__main__":
     users = read_users_from_file(USERS_FILE)
-    generate_cards(users[:100])
+    generate_cards(users[:1])
