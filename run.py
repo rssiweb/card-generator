@@ -64,8 +64,11 @@ def read_users_from_file(filename):
             )
     return persons
 
-def get_barcode_image(student_id, size):
-    content = f"https://login.rssi.in/rssi-student/verification.php?get_id={student_id}"
+def get_barcode_image(person, size):
+    if person.role == "Student":
+        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.user_id}"
+    else:
+        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.user_id}"
     return _get_barcode_for(content, size=size)
 
 def _get_barcode_for(content, size):
@@ -112,7 +115,7 @@ def generate_cards(persons):
             logger.info(f"{person.name} - image not loaded")
 
         try:
-            barcode_img = get_barcode_image(person.userid, size=QR_SIZE)
+            barcode_img = get_barcode_image(person, size=QR_SIZE)
         except Exception:
             logging.exception(f"{person.name} - barcode not loaded")
         else:
