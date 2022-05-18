@@ -1,2 +1,2 @@
 # /bin/bash
-poetry run python run.py
+python -m poetry run python run.py

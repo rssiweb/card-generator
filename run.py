@@ -16,9 +16,9 @@ USERS_FILE = "users.csv"
 
 QR_POSITION = (838, 1601) # (X, Y)
 QR_SIZE=300
-FONT_SIZE_BIG=70
-FONT_SIZE_MEDIUM=65
-FONT_SIZE_SMALL=60
+FONT_SIZE_BIG=65
+FONT_SIZE_MEDIUM=60
+FONT_SIZE_SMALL=55
 
 class COLUMNS:
     USER_ID = "Student_ID"
@@ -66,9 +66,9 @@ def read_users_from_file(filename):
 
 def get_barcode_image(person, size):
     if person.role == "Student":
-        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.user_id}"
+        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.userid}"
     else:
-        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.user_id}"
+        content = f"https://login.rssi.in/rssi-member/verification.php?get_id={person.userid}"
     return _get_barcode_for(content, size=size)
 
 def _get_barcode_for(content, size):
@@ -90,19 +90,19 @@ def generate_cards(persons):
 
         text_width, _ = draw.textsize(person.name, font=font)
         text_x = (width - text_width) / 2
-        draw.text((text_x, 1399), person.name, (0, 0, 0), font=font)
+        draw.text((text_x, 1349), person.name, (0, 0, 0), font=font)
 
         font = ImageFont.truetype(font_path, FONT_SIZE_MEDIUM)
         text_width, _ = draw.textsize(person.userid, font=font)
         text_x = (width - text_width) / 2
-        draw.text((text_x, 1499), person.userid, (0, 0, 0), font=font)
+        draw.text((text_x, 1449), person.userid, (0, 0, 0), font=font)
         
         font = ImageFont.truetype(font_path, FONT_SIZE_SMALL)
 
         role = person.role if person.role else (" " * 20)
         text_width, _ = draw.textsize(role, font=font)
         text_x = (width - text_width) / 2
-        draw.text((text_x, 1599), role, (0, 0, 0), font=font)
+        draw.text((text_x, 1549), role, (0, 0, 0), font=font)
 
         
         if dp:
