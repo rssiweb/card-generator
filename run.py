@@ -66,9 +66,9 @@ def read_users_from_file(filename):
 
 def get_barcode_image(person, size):
     if person.role == "Student":
-        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.user_id}"
+        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.userid}"
     else:
-        content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.user_id}"
+        content = f"https://login.rssi.in/rssi-member/verification.php?get_id={person.userid}"
     return _get_barcode_for(content, size=size)
 
 def _get_barcode_for(content, size):
