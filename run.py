@@ -14,11 +14,12 @@ logger = logging.getLogger("app")
 TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1646890333/ID%20Card/ID_Card_FINAL.jpg"
 USERS_FILE = "users.csv"
 
-QR_POSITION = (838, 1601) # (X, Y)
-QR_SIZE=300
-FONT_SIZE_BIG=65
-FONT_SIZE_MEDIUM=60
-FONT_SIZE_SMALL=55
+QR_POSITION = (838, 1601)  # (X, Y)
+QR_SIZE = 300
+FONT_SIZE_BIG = 65
+FONT_SIZE_MEDIUM = 60
+FONT_SIZE_SMALL = 55
+
 
 class COLUMNS:
     USER_ID = "Student_ID"
@@ -64,15 +65,21 @@ def read_users_from_file(filename):
             )
     return persons
 
+
 def get_barcode_image(person, size):
     if person.role == "Student":
         content = f"https://login.rssi.in/rssi-student/verification.php?get_id={person.userid}"
     else:
-        content = f"https://login.rssi.in/rssi-member/verification.php?get_id={person.userid}"
+        content = (
+            f"https://login.rssi.in/rssi-member/verification.php?get_id={person.userid}"
+        )
     return _get_barcode_for(content, size=size)
 
+
 def _get_barcode_for(content, size):
-    res = requests.get(f"https://chart.googleapis.com/chart?chs={size}x{size}&cht=qr&chl={content}")
+    res = requests.get(
+        f"https://chart.googleapis.com/chart?chs={size}x{size}&cht=qr&chl={content}"
+    )
     return Image.open(io.BytesIO(res.content))
 
 
@@ -84,7 +91,7 @@ def generate_cards(persons):
     card_files = []
     for person in persons:
         dp = person.image and open_image_from_url(person.image)
-        
+
         tmp_img = copy.copy(img)
         draw = ImageDraw.Draw(tmp_img)
 
@@ -96,7 +103,7 @@ def generate_cards(persons):
         text_width, _ = draw.textsize(person.userid, font=font)
         text_x = (width - text_width) / 2
         draw.text((text_x, 1449), person.userid, (0, 0, 0), font=font)
-        
+
         font = ImageFont.truetype(font_path, FONT_SIZE_SMALL)
 
         role = person.role if person.role else (" " * 20)
@@ -104,10 +111,9 @@ def generate_cards(persons):
         text_x = (width - text_width) / 2
         draw.text((text_x, 1549), role, (0, 0, 0), font=font)
 
-        
         if dp:
             # h - 348 w - 300
-            dp = dp.convert('RGB')
+            dp = dp.convert("RGB")
             dp = dp.resize((350, 470), Image.ANTIALIAS)
             x_off = (width - dp.size[0]) // 2
             tmp_img.paste(dp, (x_off, 830))
@@ -130,4 +136,4 @@ def generate_cards(persons):
 
 if __name__ == "__main__":
     users = read_users_from_file(USERS_FILE)
-    generate_cards(users[:1])
+    generate_cards(users)
