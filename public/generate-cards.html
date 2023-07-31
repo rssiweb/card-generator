@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Generate Cards</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+  <style type="text/css">
+    .card-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .canvas {
+      border: 1px solid #000;
+      border-radius: 8px;
+      /* box-sizing: border-box;
+      resize: height;
+      height: calc(100vh * 1.641);
+      width: 100%; */
+    }
+
+    #grid-snap {
+      background-image: url("https://res.cloudinary.com/hs4stt5kg/image/upload/v1646890333/ID%20Card/ID_Card_FINAL.jpg");
+      background-repeat: no-repeat;
+      /* background-size: 1200px 1970px; */
+      width: 1200px;
+      height: 1970px;
+      position: relative;
+    }
+
+    .draggable {
+      border: 1px solid #000;
+      display: flex;
+      cursor: move;
+      background-color: #00000011;
+      font-family: Ubuntu;
+      display: flex;
+      border-radius: 8px;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      width: 40%;
+    }
+
+    @font-face {
+      font-family: Ubuntu;
+      src: url(/fonts/Ubuntu-M.ttf);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Generate Cards</h1>
+    <div class="mt-4">
+      <div class="flex flex-row mt-4">
+        <div class="w-1/4"></div>
+        <div class="w-1/2">
+          <input type="file" name="fileToUpload" v-on:change="readSingleFile"
+            class="w-full border border-gray-300 px-3 py-2 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+          <p>
+            <span v-if="file">File: {{ file.name }}</span>
+            <span v-else>Choose a CSV file containing User Data</span>
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-row py-2">
+
+        <div class="md:w-1/4 sm:w-1/2">
+          <div class="text-center">Name</div>
+          <div class="flex flex-row">
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Font Size</label>
+              <input v-model="details.name.fontSize" step="0.1" max="100" min="3" type="number"
+                class="w-full  border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Font Color</label>
+              <input v-model="details.name.color" type="text"
+                class="w-full border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+          </div>
+        </div>
+        <div class="md:w-1/4 sm:w-1/2">
+          <div class="text-center">User ID</div>
+          <div class="flex flex-row">
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Font Size</label>
+              <input v-model="details.userid.fontSize" step="0.1" max="100" min="3" type="number"
+                class="w-full  border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Font Color</label>
+              <input v-model="details.userid.color" type="text"
+                class="w-full border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+          </div>
+        </div>
+        <div class="md:w-1/4 sm:w-1/2">
+          <div class="text-center">Role</div>
+          <div class="flex flex-row">
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Font Size</label>
+              <input v-model="details.role.fontSize" step="0.1" max="100" min="3" type="number"
+                class="w-full  border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Font Color</label>
+              <input v-model="details.role.color" type="text"
+                class="w-full border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+          </div>
+        </div>
+        <div class="md:w-1/4 sm:w-1/2">
+          <div class="text-center">QR Code</div>
+          <div class="flex flex-row">
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">QR Size</label>
+              <input v-model="details.qrcode.size" max="700" min="100" type="number"
+                class="w-full  border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Color</label>
+              <input v-model="details.qrcode.color" type="text"
+                class="w-full border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+          </div>
+        </div>
+        <div class="md:w-1/4 sm:w-1/2">
+          <div class="text-center">Photo</div>
+          <div class="flex flex-row">
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Width</label>
+              <input v-model="details.photo.width" type="number"
+                class="w-full  border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+            <div class="w-full px-2">
+              <label for="name-font-size" class="text-xs">Height</label>
+              <input v-model="details.photo.height" type="number"
+                class="w-full border border-gray-300 bg-white placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 
+      <pre>Details: {{details}}</pre>
+      <div class="mt-4">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          @click="setInitialCoordinates">set initial coordinates</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          @click="setTextStyle(details)">set Style</button>
+      </div> -->
+
+      <div class="mt-4 card-container">
+        <div class="canvas">
+          <div id="grid-snap">
+            <div class="draggable" id="item-userid">
+              <div>
+                USER ID
+              </div>
+            </div>
+            <div class="draggable" id="item-name">
+              <div>
+                Sample Name
+              </div>
+            </div>
+            <div class="draggable" id="item-role">
+              <div>
+                Role Name
+              </div>
+            </div>
+            <div class="draggable" id="item-qrcode">
+              <div>
+                QR Code
+              </div>
+            </div>
+            <div class="draggable" id="item-photo">
+              <div>
+                Image
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="mt-4 text-center">
+        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-4xl"
+          @click="generateImages">Generate Images</button>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- vue.js 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <script>
+    // a Vue.js 3 app that takes a CSV file along with marked positions on a template image, to generate images placing text on the marked positions
+    const { createApp, ref, reactive, watch, computed, onMounted } = Vue
+
+    var app = createApp({
+      setup() {
+        // {
+        //     "userid": { "x": 0, "y": 1350 },
+        //     "name": { "x": 0, "y": 1153 },
+        //     "qrcode": { "x": 855, "y": 1319 },
+        //     "photo": { "x": 0, "y": 184 },
+        //     "role": { "x": 0, "y": 1259 }
+        //   }
+        const initialCoordinates = {
+          "userid": { "x": 29, "y": 68 },
+          "name": { "x": 29, "y": 58 },
+          "qrcode": { "x": 71, "y": 66 },
+          "photo": { "x": 34, "y": 9 },
+          "role": { "x": 29, "y": 64 }
+        }
+        const details = reactive({
+          userid: { fontSize: 60, color: "#000000", x: 0, y: 0 },
+          name: { fontSize: 65, color: "#000000", x: 0, y: 0 },
+          role: { fontSize: 55, color: "#000000", x: 0, y: 0 },
+          qrcode: { size: 300, color: "#000000", x: 0, y: 0 },
+          photo: { height: 470, width: 350, x: 0, y: 0 },
+        })
+        const file = ref(null)
+        const rows = ref([
+          {
+            
+          }
+        ])
+        const idCardTemplateImage = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1646890333/ID%20Card/ID_Card_FINAL.jpg"
+
+        const readSingleFile = (e) => {
+          file.value = e.target.files[0]
+          Papa.parse(file.value, {
+            header: true,
+            complete: function (results) {
+              rows.value = results.data
+            }
+          });
+        }
+
+        watch(details, (newValue, oldValue) => {
+          setTextStyle(newValue)
+        })
+
+        const setTextStyle = (styles) => {
+          console.log("applying styles", styles)
+          if (!styles) return
+          for (const [key, value] of Object.entries(styles)) {
+            if (key === "qrcode") {
+              const element = document.getElementById(`item-${key}`)
+              if (!element) continue
+              element.style.width = `${value.size}px`
+              element.style.height = `${value.size}px`
+              element.style.color = value.color
+            }
+            else if (key === "photo") {
+              const element = document.getElementById(`item-${key}`)
+              if (!element) continue
+              element.style.width = `${value.width}px`
+              element.style.height = `${value.height}px`
+            }
+            else {
+              const element = document.getElementById(`item-${key}`)
+              if (!element) continue
+              element.style.fontSize = `${value.fontSize}px`
+              element.style.color = value.color
+            }
+          }
+        }
+
+        const dragMoveListener = (event) => {
+          var target = event.target
+          // keep the dragged position in the data-x/data-y attributes
+          var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+          var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+          // translate the element
+          target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+
+          // update the position attributes
+          target.setAttribute('data-x', x)
+          target.setAttribute('data-y', y)
+          const elementId = target.getAttribute('id');
+          const key = elementId.split('-')[1];
+          if (details.value[key]) {
+            // store x and y in percentage of parent width and height
+            details.value[key].x = Math.round((x / target.parentElement.offsetWidth) * 100)
+            details.value[key].y = Math.round((y / target.parentElement.offsetHeight) * 100)
+          }
+        }
+
+        const setInitialCoordinates = () => {
+          console.log("setting initial coordinates")
+          const keys = Object.keys(initialCoordinates)
+          keys.forEach((key) => {
+            var target = document.getElementById(`item-${key}`);
+            // initialCoordinates[key] container the x and y in percentage of parent width and height
+            // calculate the x and y in pixels
+            var x = (initialCoordinates[key].x * target.parentElement.offsetWidth) / 100
+            var y = (initialCoordinates[key].y * target.parentElement.offsetHeight) / 100
+
+            // translate the element
+            target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+
+            // update the position attributes
+            target.setAttribute('data-x', x)
+            target.setAttribute('data-y', y)
+          })
+        }
+
+        const initInteract = () => {
+          interact('.draggable')
+            .draggable({
+              modifiers: [
+                // keep the edges inside the parent
+                interact.modifiers.restrictEdges({
+                  outer: 'parent'
+                }),
+                // minimum size
+                interact.modifiers.restrictSize({
+                  min: { width: 100, height: 50 }
+                }),
+                interact.modifiers.restrictRect({
+                  restriction: 'parent',
+                  endOnly: true
+                }),
+                interact.modifiers.snap({
+                  targets: [
+                    interact.snappers.grid({ x: 5, y: 5 })
+                  ],
+                  range: Infinity,
+                  relativePoints: [{ x: 0, y: 0 }]
+                })
+              ],
+              listeners: {
+                move: dragMoveListener,
+              }
+            })
+        }
+
+        const generateImages = () => {
+          // rows - array of users, for each of user we will generate an image
+          // coordinates - coordinates of places in percentages where we want to place the text
+          // we have to place 4 things - userid, name, role, qrcode
+          // all images will be of same size
+          // all images will be stuffed in a single pdf
+          //  we will use canvas to generate the image
+          //  we will use jsPDF to generate the pdf
+          // we will use the idCardTemplateImage as the base image
+          var doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [1920, 1080]
+          });
+          const canvas = document.createElement('canvas');
+          canvas.width = 1920;
+          canvas.height = 1080;
+          const ctx = canvas.getContext('2d');
+          const image = new Image();
+          image.src = idCardTemplateImage;
+          image.onload = () => {
+            ctx.drawImage(image, 0, 0, 1920, 1080);
+            rows.value.forEach((row) => {
+              const { name, userid, role, qrcode } = row;
+              ctx.font = `${details.value.name.fontSize}px Ubuntu`;
+              ctx.fillStyle = details.value.name.color;
+              ctx.fillText(name, (details.value.name.x * canvas.width) / 100, (details.value.name.y * canvas.height) / 100);
+              ctx.font = `${details.value.userid.fontSize}px Ubuntu`;
+              ctx.fillStyle = details.value.userid.color;
+              ctx.fillText(userid, (details.value.userid.x * canvas.width) / 100, (details.value.userid.y * canvas.height) / 100);
+              ctx.font = `${details.value.role.fontSize}px Ubuntu`;
+              ctx.fillStyle = details.value.role.color;
+              ctx.fillText(role, (details.value.role.x * canvas.width) / 100, (details.value.role.y * canvas.height) / 100);
+              ctx.font = `${details.value.qrcode.size}px Ubuntu`;
+              ctx.fillStyle = details.value.qrcode.color;
+              ctx.fillText(qrcode, (details.value.qrcode.x * canvas.width) / 100, (details.value.qrcode.y * canvas.height) / 100);
+              const dataURL = canvas.toDataURL('image/jpeg', 1.0);
+              doc.addImage(dataURL, 'JPEG', 0, 0, 1920, 1080);
+              doc.addPage();
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+            })
+            doc.save('idcards.pdf');
+          }
+        }
+
+        onMounted(() => {
+          setTextStyle({
+            name: { fontSize: 65, color: "#000000" },
+            userid: { fontSize: 60, color: "#000000" },
+            role: { fontSize: 55, color: "#000000" },
+            qrcode: { size: 300, color: "#000000" },
+            photo: { height: 470, width: 350 },
+          })
+          setInitialCoordinates();
+          initInteract();
+        })
+
+        return {
+          file,
+          readSingleFile,
+          details,
+          setInitialCoordinates,
+          setTextStyle,
+          generateImages
+        }
+      }
+    })
+    app.mount('#app')
+
+  </script>
+</body>
+
+</html>

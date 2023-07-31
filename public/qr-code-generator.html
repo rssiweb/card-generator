@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Generate Cards</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+</head>
+
+<body>
+    <div id="app" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">QR Code Generator</h1>
+        <div class="mt-4">
+            <div class="flex flex-row mt-4">
+                <div class="w-1/4"></div>
+                <div class="w-1/2">
+                    <input type="file" name="fileToUpload" v-on:change="readSingleFile">
+                </div>
+            </div>
+            <div class="flex flex-row mt-4">
+                <div class="w-1/4">
+                    <input type="number" v-model="size" />
+                    <p>size of the QR code in pixels</p>
+                </div>
+                <div class="w-1/4">
+                    <input name="contentColumn" v-model="contentColumn" />
+                    <p>column name to use as content of QR</p>
+                </div>
+                <div class="w-1/4">
+                    <input name="labelColumn" v-model="labelColumn" />
+                    <p>column name to use as label</p>
+                </div>
+                <div class="w-1/4">
+                    <input name="gridColumns" v-model="gridCols" />
+                    <p>number of columns in the grid</p>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <!-- grid with dynamic sized using gridCols -->
+
+
+        <div class="mt-6">
+            <div :class="gridClass" v-if="items.length">
+                <template v-for="item in items">
+                    <div class="flex flex-col items-center">
+                        <div>
+                            <img
+                                :src="`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${item[contentColumn]}`" 
+                                loading="eager"
+                                />
+                        </div>
+                        <div class="text-center text-2xl">
+                            {{item[labelColumn]}}
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <div v-else>
+                <p>Upload a CSV file to get started</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script>
+        const { createApp, ref, watch, computed } = Vue
+
+        createApp({
+            setup() {
+                const gridClass = computed(() => {
+                    const tmp = `grid-cols-${gridCols.value}`
+                    const classes = { grid: true, 'gap-2': true }
+                    classes[tmp] = true
+                    return classes
+                })
+                const gridCols = ref(3)
+
+                const size = ref(240)
+                const file = ref(null)
+                const contentColumn = ref("Link")
+                const labelColumn = ref("ID")
+                const content = ref("")
+
+                const readSingleFile = (e) => {
+                    console.log(e)
+                    var file = e.target.files[0];
+                    var textType = /text.*/;
+                    if (file.type.match(textType)) {
+                        var reader = new FileReader();
+                        reader.onload = (e) => {
+                            content.value = e.target.result
+                        }
+                        reader.readAsText(file);
+                    } else {
+                        alert("File not supported!")
+                    }
+                }
+
+                
+
+                const items = computed(() => {
+                    const parsed = Papa.parse(content.value, {
+                        header: true
+                    })
+                    return parsed.data
+                })
+
+                return {
+                    size,
+                    file,
+                    items,
+                    contentColumn,
+                    labelColumn,
+                    gridCols,
+                    gridClass,
+                    readSingleFile
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>

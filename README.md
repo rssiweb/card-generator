@@ -1,1 +1,3 @@
-pipenv run python run.py
+# Admin Utilities
+
+tools to help administer rssi.in
