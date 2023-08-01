@@ -51,6 +51,15 @@
       font-family: Ubuntu;
       src: url(/fonts/Ubuntu-M.ttf);
     }
+
+    /* Styles for no print */
+    @media print {
+
+      /* Add any elements you want to hide from printing here */
+      .no-print {
+        display: none;
+      }
+    }
   </style>
 </head>
 
@@ -58,7 +67,7 @@
   <div id="app" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
     <h1 class="text-3xl font-bold tracking-tight text-gray-900">Generate Cards</h1>
     <div class="mt-4">
-      <div class="flex flex-row mt-4">
+      <div class="flex flex-row mt-4 no-print">
         <div class="w-1/4"></div>
         <div class="w-1/2">
           <input type="file" name="fileToUpload" v-on:change="readSingleFile"
@@ -69,7 +78,7 @@
           </p>
         </div>
       </div>
-      <div class="flex flex-row py-2">
+      <div class="flex flex-row py-2 no-print">
 
         <div class="md:w-1/4 sm:w-1/2">
           <div class="text-center">Name</div>
@@ -193,7 +202,7 @@
           @click="generateImages">Generate Images</button>
       </div>
     </div>
-    
+
   </div>
 
   <!-- vue.js 3 -->
@@ -230,7 +239,7 @@
         const file = ref(null)
         const rows = ref([
           {
-            
+
           }
         ])
         const idCardTemplateImage = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1646890333/ID%20Card/ID_Card_FINAL.jpg"
