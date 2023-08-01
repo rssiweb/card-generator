@@ -11,11 +11,11 @@ import csv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
-TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1646890333/ID%20Card/ID_Card_FINAL.jpg"
+TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1690876629/ID%20Card/ID_Card_FINAL_php_V3.jpg"
 USERS_FILE = "users.csv"
 
-QR_POSITION = (838, 1601)  # (X, Y)
-QR_SIZE = 300
+QR_POSITION = (700, 1405)  # (X, Y) - Adjust the values as needed
+QR_SIZE = 500
 FONT_SIZE_BIG = 65
 FONT_SIZE_MEDIUM = 60
 FONT_SIZE_SMALL = 55
@@ -97,26 +97,26 @@ def generate_cards(persons):
 
         text_width, _ = draw.textsize(person.name, font=font)
         text_x = (width - text_width) / 2
-        draw.text((text_x, 1349), person.name, (0, 0, 0), font=font)
+        draw.text((text_x, 1155), person.name, (0, 0, 0), font=font)
 
         font = ImageFont.truetype(font_path, FONT_SIZE_MEDIUM)
         text_width, _ = draw.textsize(person.userid, font=font)
         text_x = (width - text_width) / 2
-        draw.text((text_x, 1449), person.userid, (0, 0, 0), font=font)
+        draw.text((text_x, 1249), person.userid, (0, 0, 0), font=font)
 
         font = ImageFont.truetype(font_path, FONT_SIZE_SMALL)
 
         role = person.role if person.role else (" " * 20)
         text_width, _ = draw.textsize(role, font=font)
         text_x = (width - text_width) / 2
-        draw.text((text_x, 1549), role, (0, 0, 0), font=font)
+        draw.text((text_x, 1349), role, (0, 0, 0), font=font)
 
         if dp:
             # h - 348 w - 300
             dp = dp.convert("RGB")
             dp = dp.resize((350, 470), Image.ANTIALIAS)
             x_off = (width - dp.size[0]) // 2
-            tmp_img.paste(dp, (x_off, 830))
+            tmp_img.paste(dp, (x_off, 650))
         else:
             logger.info(f"{person.name} - image not loaded")
 
