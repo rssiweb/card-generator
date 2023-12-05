@@ -104,13 +104,6 @@ def generate_cards(persons):
         text_x = (width - text_width) / 2
         draw.text((text_x, 1249), person.userid, (0, 0, 0), font=font)
 
-        font = ImageFont.truetype(font_path, FONT_SIZE_SMALL)
-
-        role = person.role if person.role else (" " * 20)
-        text_width, _ = draw.textsize(role, font=font)
-        text_x = (width - text_width) / 2
-        draw.text((text_x, 1349), role, (0, 0, 0), font=font)
-
         if dp:
             # h - 348 w - 300
             dp = dp.convert("RGB")
@@ -126,6 +119,13 @@ def generate_cards(persons):
             logging.exception(f"{person.name} - barcode not loaded")
         else:
             tmp_img.paste(barcode_img, QR_POSITION)
+
+            font = ImageFont.truetype(font_path, FONT_SIZE_SMALL)
+
+            role = person.role if person.role else (" " * 20)
+            text_width, _ = draw.textsize(role, font=font)
+            text_x = (width - text_width) / 2
+            draw.text((text_x, 1349), role, (0, 0, 0), font=font)
 
         card_filename = "card_{}.jpg".format(person.name)
         card_filepath = os.path.join("cards", card_filename)
