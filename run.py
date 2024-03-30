@@ -11,11 +11,11 @@ import csv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
-TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1703182962/ID%20Card/back_5535174-2.jpg"
+TEMPLATE_URL = "https://res.cloudinary.com/hs4stt5kg/image/upload/v1711773170/ID%20Card/id_card_front_v1.jpg"
 USERS_FILE = "users.csv"
 
 # Assuming you want the QR code below the image with some vertical padding
-y_off_qr = 820  # Adjust the Y coordinate as needed
+y_off_qr = 850  # Adjust the Y coordinate as needed
 FONT_SIZE_BIG = 65
 FONT_SIZE_MEDIUM = 45
 FONT_SIZE_SMALL = 40  # using
@@ -113,19 +113,19 @@ def generate_cards(persons):
                 text_bbox = draw.textbbox((0, 0), person.name, font=font)
                 text_width = text_bbox[2] - text_bbox[0]
                 text_x = (width - text_width) / 2
-                draw.text((text_x, 630), person.name, (0, 0, 0), font=font)
+                draw.text((text_x, 650), person.name, (0, 0, 0), font=font)
 
                 font = ImageFont.truetype(font_path, FONT_SIZE_SMALL)
                 text_bbox = draw.textbbox((0, 0), person.userid, font=font)
                 text_width = text_bbox[2] - text_bbox[0]
                 text_x = (width - text_width) / 2
-                draw.text((text_x, 700), person.userid, (0, 0, 0), font=font)   
+                draw.text((text_x, 720), person.userid, (0, 0, 0), font=font)   
 
                 role = person.role if person.role else (" " * 20)
                 text_bbox = draw.textbbox((0, 0), role, font=font)
                 text_width = text_bbox[2] - text_bbox[0]
                 text_x = (width - text_width) / 2
-                draw.text((text_x, 750), role, (0, 0, 0), font=font)          
+                draw.text((text_x, 770), role, (0, 0, 0), font=font)          
 
         except Exception:
             logging.exception(f"{person.name} - barcode not loaded")
