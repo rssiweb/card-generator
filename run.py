@@ -150,7 +150,7 @@ def generate_cards(persons):
         # Paste the rotated text onto the main image only for the hardcoded text
         tmp_img.paste(rotated_text_img, (x_hardcoded, y_hardcoded), rotated_text_img)
 
-        card_filename = f"card_{person.name}.jpg"
+        card_filename = f"card_{person.userid}.jpg"
         card_filepath = os.path.join("cards", card_filename)
         tmp_img.save(card_filepath, quality=95)
         card_files.append(card_filepath)
